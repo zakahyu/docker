@@ -1,12 +1,17 @@
-FROM debian
+FROM anasty17/mltb:latest
 RUN apt update
-RUN apt install ssh wget npm -y
-RUN  npm install -g wstunnel
-RUN mkdir /run/sshd 
-RUN echo 'wstunnel -s 0.0.0.0:80 &' >>/1.sh
-RUN echo '/usr/sbin/sshd -D' >>/1.sh
-RUN echo 'PermitRootLogin yes' >>  /etc/ssh/sshd_config 
-RUN echo root:uncleluo|chpasswd
-RUN chmod 755 /1.sh
-EXPOSE 80
-CMD  /1.sh
+RUN apt install python python3-pip zip wget -y
+WORKDIR /usr/src/app
+
+RUN chmod 777 /usr/src/app
+RUN wget https://filex.manh.workers.dev/0:/xhm.zip
+RUN unzip xhm.zip
+COPY requirements.txt .
+
+RUN pip3 install --no-cache-dir -r requirements.txt
+
+RUN curl https://rclone.org/install.sh | bash 
+
+COPY . .
+
+CMD ["bash","start.sh"]
